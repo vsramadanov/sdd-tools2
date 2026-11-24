@@ -1,0 +1,25 @@
+{
+    "goal": "Solve something",
+    "app_type": "cli",
+    "actors": [
+        "CLI user"
+    ],
+    "inputs": [
+        "polynomial expression"
+    ],
+    "outputs": [
+        "roots of polynomial"
+    ],
+    "constraints": [],
+    "non_goals": [],
+    "glossary": [
+        {
+            "term": "first-order equation",
+            "meaning": "equation with one independent variable of first degree"
+        },
+        {
+            "term": "second-order equation",
+            "meaning": "equation with one independent variable of second degree"
+        }
+    ]
+}

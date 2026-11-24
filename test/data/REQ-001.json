@@ -1,0 +1,34 @@
+{
+    "id": "REQ-001",
+    "ears": "event",
+    "acceptance": [
+        {
+            "id": "REQ-001.AC1",
+            "kind": "positive",
+            "given": "stdin: 'x + 2*x - 3'",
+            "when": "invoke: polynomial-tool",
+            "then": "exit code 0; stdout contains 'first-order equation'"
+        },
+        {
+            "id": "REQ-001.AC2",
+            "kind": "positive",
+            "given": "stdin: '5*x**2 + x - 7'",
+            "when": "invoke: polynomial-tool",
+            "then": "exit code 0; stdout contains 'second-order equation'"
+        },
+        {
+            "id": "REQ-001.AC3",
+            "kind": "positive",
+            "given": "stdin: 'x**3 - 2*x**2 + 4*x - 8'",
+            "when": "invoke: polynomial-tool",
+            "then": "exit code 0; stdout contains 'third-order equation'"
+        },
+        {
+            "id": "REQ-001.AC4",
+            "kind": "negative",
+            "given": "stdin: 'sin(x) + x'",
+            "when": "invoke: polynomial-tool",
+            "then": "exit code != 0; stderr contains 'invalid mathematical expression'"
+        }
+    ]
+}

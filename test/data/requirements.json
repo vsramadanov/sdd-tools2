@@ -1,0 +1,18 @@
+{
+  "requirements": [
+    {
+      "id": "REQ-001",
+      "type": "interface",
+      "priority": "must",
+      "text": "The system shall read a polynomial expression from standard input.",
+      "source": "answer:Q2"
+    },
+    {
+      "id": "REQ-002",
+      "type": "functional",
+      "priority": "must",
+      "text": "The system shall terminate immediately and display an error message when the provided polynomial expression is invalid.",
+      "source": "answer:Q1"
+    }
+  ]
+}

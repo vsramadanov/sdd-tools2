@@ -1,0 +1,34 @@
+{
+    "id": "REQ-002",
+    "ears": "If a provided polynomial expression is invalid, then the system shall terminate immediately and display an error message.",
+    "acceptance": [
+        {
+            "id": "REQ-002.AC1",
+            "kind": "negative",
+            "given": "expression: x*x + x + 1",
+            "when": "run: python main.py --expr 'x*x + x + 1'",
+            "then": "exit code 1; runtime <= 0.25s; stderr includes 'invalid polynomial expression'"
+        },
+        {
+            "id": "REQ-002.AC2",
+            "kind": "negative",
+            "given": "expression: sin(x) * x + 1 = 0",
+            "when": "run: python main.py --expr 'sin(x) * x + 1 = 0'",
+            "then": "exit code 1; runtime <= 0.25s; stderr includes 'invalid polynomial expression'"
+        },
+        {
+            "id": "REQ-002.AC3",
+            "kind": "negative",
+            "given": "expression: x + 'a' + 1 = 0",
+            "when": "run: python main.py --expr 'x + a + 1 = 0'",
+            "then": "exit code 1; runtime <= 0.25s; stderr includes 'invalid polynomial expression'"
+        },
+        {
+            "id": "REQ-002.AC4",
+            "kind": "negative",
+            "given": "expression: x = 1 + garbage",
+            "when": "run: python main.py --expr 'x = 1 + garbage'",
+            "then": "exit code 1; runtime <= 0.25s; stderr includes 'invalid polynomial expression'"
+        }
+    ]
+}
