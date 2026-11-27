@@ -20,10 +20,10 @@ Output JSON only. No code, no language-specific types.
 {"name":"..","purpose":"max 12 words","inputs":"..","outputs":"..","errors":[..],"reqs":[..]}
 
 # Example
-MODULE: csv_parser - Разбор строк CSV в записи по заголовку
+MODULE: csv_parser - Parsing CSV rows into records by header
 ITS_REQS: REQ-002 use first row as keys; REQ-003 error on malformed row
 LOWER_API: types: Record(fields), ParseError(row_number)
 OUTPUT:
 {"module":"csv_parser","owns_types":[],"public_api":[
-{"name":"parse_rows","purpose":"Преобразовать строки CSV в записи по заголовку","inputs":"список строк CSV","outputs":"список Record","errors":["malformed_row"],"reqs":["REQ-002","REQ-003"]}
+{"name":"parse_rows","purpose":"Convert CSV rows into records by header","inputs":"list of CSV rows","outputs":"list of Record","errors":["malformed_row"],"reqs":["REQ-002","REQ-003"]}
 ]}

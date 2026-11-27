@@ -25,9 +25,9 @@ SKELETON: cli(entry,fixed) app(app,fixed) types(domain,fixed) io(infra,optional)
 REQ_DIGEST: REQ-001 read CSV from file; REQ-002 keys from header row; REQ-003 exit 1 on bad row; REQ-005 write JSON to stdout
 OUTPUT:
 {"modules":[
-{"name":"cli","layer":"entry","responsibility":"Разбор аргументов и возврат кода завершения","origin":"skeleton"},
-{"name":"app","layer":"app","responsibility":"Выполнение сценария конвертации от входа до выхода","origin":"skeleton"},
-{"name":"types","layer":"domain","responsibility":"Общие типы данных и ошибки","origin":"skeleton"},
-{"name":"io","layer":"infra","responsibility":"Чтение файла и запись в stdout","origin":"skeleton"},
-{"name":"csv_parser","layer":"domain","responsibility":"Разбор строк CSV в записи по заголовку","origin":"added"}
+{"name":"cli","layer":"entry","responsibility":"Argument parsing and returning the exit code","origin":"skeleton"},
+{"name":"app","layer":"app","responsibility":"Executing the conversion scenario from input to output","origin":"skeleton"},
+{"name":"types","layer":"domain","responsibility":"Shared data types and errors","origin":"skeleton"},
+{"name":"io","layer":"infra","responsibility":"Reading the file and writing to stdout","origin":"skeleton"},
+{"name":"csv_parser","layer":"domain","responsibility":"Parsing CSV rows into records by header","origin":"added"}
 ],"dropped":[]}

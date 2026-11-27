@@ -22,4 +22,4 @@ req, primary, secondary, reason, suggested_module (only when NONE)
 REQ-003 (functional): The system shall exit with non-zero code and print row number on a malformed CSV row.
 MODULES: cli: arguments, exit code | app: run conversion scenario | csv_parser: parse CSV rows into records | io: read file, write stdout | types: shared types and errors
 OUTPUT:
-{"req":"REQ-003","primary":"csv_parser","secondary":["cli"],"reason":"парсер обнаруживает ошибку, cli возвращает код"}
+{"req":"REQ-003","primary":"csv_parser","secondary":["cli"],"reason":"parser detects the error, cli returns the code"}

@@ -19,11 +19,11 @@ Output JSON only.
 {"module":"..","uses":[".."],"why":".."}
 
 # Example
-MODULE: app - Выполнение сценария конвертации от входа до выхода; API: run_conversion
+MODULE: app - Executing the conversion scenario from input to output; API: run_conversion
 CANDIDATES: io: [read_file, write_stdout] | csv_parser: [parse_rows] | json_writer: [serialize_records]
 OUTPUT:
 {"module":"app","depends_on":[
-{"module":"io","uses":["read_file","write_stdout"],"why":"ввод и вывод сценария"},
-{"module":"csv_parser","uses":["parse_rows"],"why":"разбор прочитанных строк"},
-{"module":"json_writer","uses":["serialize_records"],"why":"формирование JSON"}
+{"module":"io","uses":["read_file","write_stdout"],"why":"scenario input and output"},
+{"module":"csv_parser","uses":["parse_rows"],"why":"parsing the read rows"},
+{"module":"json_writer","uses":["serialize_records"],"why":"building the JSON"}
 ]}
