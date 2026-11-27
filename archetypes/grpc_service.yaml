@@ -1,0 +1,50 @@
+id: grpc_service
+version: 1
+use_when: "A long-running server that accepts gRPC calls (unary and streaming) as described in .proto"
+not_when: "REST/HTTP only without protobuf; one-shot run; library without a server"
+neighbors:
+  rest_service: "clients communicate over HTTP/JSON"
+  library: "no server process"
+layers: [contract, platform, entry, app, domain, infra]
+same_layer_deps: forbid
+allowed_deps:
+  contract: []
+  platform: [types]
+  entry:    [contract, platform, app, types]
+  app:      [domain, infra, platform, types]
+  domain:   [types]
+  infra:    [platform, types]
+modules:
+  - {name: api_proto, layer: contract, fixed: true, generated: partly, role: "description of services and messages in .proto, API package version"}
+  - {name: server,    layer: entry,    fixed: true,  role: "startup, TLS, interceptors, health, graceful shutdown"}
+  - {name: handlers,  layer: entry,    fixed: true,  role: "RPC implementation: translating messages into domain types and errors into gRPC statuses"}
+  - {name: app,       layer: app,      fixed: true,  role: "call handling scenarios"}
+  - {name: types,     layer: domain,   fixed: true,  role: "shared data types and errors"}
+  - {name: config,    layer: platform, fixed: true,  role: "port, TLS, timeouts, message size limits"}
+  - {name: storage,   layer: infra,    fixed: false, needed_if: "requirements mention storage, database, state between calls", role: "storage access"}
+  - {name: clients,   layer: infra,    fixed: false, needed_if: "calls to external services", role: "external service clients"}
+  - {name: telemetry, layer: platform, fixed: false, needed_if: "metrics, tracing, structured logging in requirements", role: "logs, metrics, tracing"}
+limits: {max_added_modules: 3, added_layers: [domain], max_rpc_per_service: 7}
+req_routing:
+  - {when: "method names, message fields, call kind (unary/stream), API version", primary: api_proto}
+  - {when: "gRPC status codes, error-to-status mapping, metadata", primary: handlers}
+  - {when: "TLS, authentication, deadlines, graceful shutdown, health", primary: server}
+  - {when: "business rules and step order", primary: "app or domain module"}
+  - {when: "storage, external calls", primary: "storage or clients"}
+  - {when: "SLO: latency, throughput, connection count", primary: _global}
+invariants:
+  - "protobuf types are used only by api_proto and handlers"
+  - "domain and app do not import generated code"
+  - "each RPC from api_proto is implemented by exactly one handlers function and covered by ≥1 REQ"
+  - "domain errors are mapped to statuses via a table (one table, one module)"
+conventions_slots:
+  error_mapping: {options: [table_by_error_kind], default: table_by_error_kind}
+  auth:          {options: [none, token_metadata, mtls], needs_user: true}
+  deadlines:     {options: [required_on_client, server_default], default: server_default}
+  proto_style:   {options: [buf_lint_default], default: buf_lint_default}
+  reflection:    {options: [off, on], default: off}
+  health:        {options: [grpc_health_v1], default: grpc_health_v1}
+harness: grpc_client                     # server on a free port, steps: call_unary, call_stream, expect_status, expect_response, metadata
+ambiguity_focus: [rpc_kinds(unary|server_stream|client_stream|bidi), auth, error_codes, idempotency, persistence, message_size_limits, backward_compat, pagination, tls]
+adr_triggers: [auth_method, storage_choice, streaming_design, api_versioning]
+release_artifacts: [server_binary_or_image, proto_files, buf_breaking_report_against_previous_version]

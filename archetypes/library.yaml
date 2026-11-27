@@ -1,0 +1,41 @@
+id: library
+version: 1
+use_when: "Code is imported by other programs via import; no entry point; the interface is functions and types"
+not_when: "There is a command line or server as the primary usage mode"
+neighbors:
+  cli_tool: "the primary usage mode is launching from a terminal"
+  grpc_service: "the primary usage mode is network calls"
+layers: [api, domain, infra]
+same_layer_deps: {domain: dag}
+allowed_deps:
+  api:    [domain, infra, types]
+  domain: [domain, types]
+  infra:  [types]
+modules:
+  - {name: api,      layer: api,    fixed: true,  role: "public facade: the single import point for users"}
+  - {name: types,    layer: domain, fixed: true,  role: "public data types and errors"}
+  - {name: adapters, layer: infra,  fixed: false, needed_if: "requirements mention files, network, external resources", role: "access to external resources"}
+limits: {max_added_modules: 5, added_layers: [domain], exported_surface_max: 15}
+exported_surface:
+  rule: "an item in a module's public_api is marked exported: true only if needed by the library user; api only re-exports"
+  each_exported_item: "has a REQ, a usage example, and a public import test"
+req_routing:
+  - {when: "names and signatures of public functions, import paths, version, stability", primary: api}
+  - {when: "algorithms, input validation, rules", primary: "domain module"}
+  - {when: "files, network, clock, external resources", primary: adapters}
+  - {when: "language versions, dependencies, thread safety", primary: _global}
+invariants:
+  - "the library does not write to stdout or stderr, does not terminate the process, does not configure a global logger"
+  - "input/output only in adapters or via objects passed by the caller"
+  - "only exported items are visible externally; private modules are not imported by the user"
+  - "errors are typed exceptions or result from types, no string codes"
+conventions_slots:
+  error_style:   {options: [exceptions, result_objects], default: exceptions}
+  logging:       {options: [none, stdlib_logger_no_handlers], default: none}
+  concurrency:   {options: [not_thread_safe_documented, thread_safe], default: not_thread_safe_documented, needs_user: true}
+  sync_async:    {options: [sync, async, both], default: sync, needs_user: true}
+  typing:        {options: [fully_typed], default: fully_typed}
+harness: direct_call
+ambiguity_focus: [sync_vs_async, thread_safety, supported_runtime_versions, io_injection, error_style, stability_guarantees, zero_dependencies, performance_limits]
+adr_triggers: [exposed_types, error_model, sync_async, runtime_versions, dependencies]
+release_artifacts: [package, typed_marker, api_snapshot, examples_checked, compat_matrix]

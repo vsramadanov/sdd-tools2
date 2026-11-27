@@ -1,0 +1,42 @@
+id: cli_tool
+version: 1
+use_when: "Launched from the command line, reads arguments, writes to stdout, stderr, or a file, exits with a code"
+not_when: "Long-running server; code is only imported by other programs"
+neighbors:
+  library: "needs import from another program's code rather than launching"
+  batch_job: "scheduled run without arguments and dialog"
+layers: [entry, app, domain, infra]
+same_layer_deps: forbid
+allowed_deps:
+  entry:  [app, types]
+  app:    [domain, infra, types]
+  domain: [types]
+  infra:  [types]
+modules:
+  - {name: cli,      layer: entry,  fixed: true,  role: "argument parsing, message output, exit code"}
+  - {name: app,      layer: app,    fixed: true,  role: "executing the scenario from input to output"}
+  - {name: types,    layer: domain, fixed: true,  role: "shared data types and errors"}
+  - {name: io,       layer: infra,  fixed: false, needed_if: "inputs or outputs: file, stdin, stdout, directory", role: "reading and writing files and streams"}
+  - {name: settings, layer: infra,  fixed: false, needed_if: "requirements mention a configuration file or environment variables", role: "loading settings"}
+limits: {max_added_modules: 3, added_layers: [domain]}
+req_routing:
+  - {when: "arguments, flags, help, version, return codes, error message format", primary: cli}
+  - {when: "order of scenario steps, combining results", primary: app}
+  - {when: "parsing, validation, data transformation", primary: "domain module"}
+  - {when: "reading, writing, encodings, paths", primary: io}
+  - {when: "stack, dependencies, platform", primary: _global}
+invariants:
+  - "only cli terminates the process and writes to stdout/stderr"
+  - "only io accesses the file system"
+  - "domain modules are pure: effects = none"
+  - "app does not parse arguments"
+conventions_slots:
+  arg_parser:   {options: [stdlib, library_from_allowlist], default: stdlib}
+  output_format: {options: [text, json], default: text, needs_user: true}
+  logging:      {options: [print_stderr, stdlib_logging, none], default: print_stderr}
+  exit_codes:   {options: [zero_one, per_error_kind], default: zero_one}
+  stdin_support: {options: [no, yes], default: no}
+harness: cli_process
+ambiguity_focus: [input_source(file|stdin), encoding, large_input(streaming), exit_codes, stdout_vs_stderr, flags, overwrite_policy, os_support]
+adr_triggers: [arg_parser, output_format, streaming_vs_in_memory]
+release_artifacts: [package_with_entry_point, help_text_snapshot]
